@@ -1,6 +1,6 @@
 [project]
 name = "nonebot-plugin-just-enough-katakanas"
-version = "0.2.1"
+version = "0.2.2"
 description = "An NoneBot plugin that converts English texts to Katakanas."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -45,7 +45,7 @@ build-backend = "uv_build"
 
 
 [tool.bumpversion]
-current_version = "0.2.1"
+current_version = "0.2.2"
 commit = true
 message = "release: bump vesion from {current_version} to {new_version}"
 tag = true
