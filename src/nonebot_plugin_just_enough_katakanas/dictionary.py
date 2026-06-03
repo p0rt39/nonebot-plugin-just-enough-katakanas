@@ -8,6 +8,7 @@ class DictionaryDatabase:
     def __init__(self) -> None:
         self.conn = None
 
+    # Only try create connection and return status
     def create_connection(self) -> bool:
         if not DB_PATH.exists():
             return False
@@ -16,8 +17,13 @@ class DictionaryDatabase:
 
         return True
 
+    # Handles connection
     def get_connection(self) -> sqlite3.Connection | None:
         return self.conn
+
+    # FIXME: create_connection and get_connection can be merged,
+    #        since get_connection has no check for connection status,
+    #        possible interlink issue can happen
 
 
 database = DictionaryDatabase()

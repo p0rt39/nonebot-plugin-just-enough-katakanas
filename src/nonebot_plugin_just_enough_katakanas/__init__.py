@@ -119,4 +119,4 @@ async def handle_ktkn_command(args: Message = CommandArg()) -> None:
     else:
         logger.debug("No input provided for conversion.")
         await ktkn.finish("Please provide the English line to convert to Katakana.")
-        # Won't wait for further input.
+        # Won't wait for further input

@@ -73,7 +73,7 @@ class English2KatakanaEngine:
             return self._phonetic_convert_without_tagger(word)
             # Fallback if NLTK data missing, never reached
 
-    # Fallback if NLTK data missing, never reached
+    # Fallback if NLTK data missing, for specific envs
     def _phonetic_convert_without_tagger(self, text: str) -> str:
         parts: list[str] = []
 
@@ -85,11 +85,13 @@ class English2KatakanaEngine:
 
         return "".join(parts)
 
+    # Main handler method
     def english_to_katakana(self, text: str) -> tuple[str, list[str]]:
 
         normalized_text = text.strip()
         words = self.extract_words(normalized_text)
 
+        # Handling single word
         if len(words) <= 1:
             if not VALID_WORD_RE.fullmatch(normalized_text):
                 return "passthrough", [normalized_text]
