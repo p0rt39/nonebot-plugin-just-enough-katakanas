@@ -786,7 +786,7 @@ wheels = [
 
 [[package]]
 name = "nonebot-plugin-just-enough-katakanas"
-version = "0.1.4"
+version = "0.1.5"
 source = { editable = "." }
 dependencies = [
     { name = "e2k" },
