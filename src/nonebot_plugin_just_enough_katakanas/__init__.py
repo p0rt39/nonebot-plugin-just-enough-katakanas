@@ -12,9 +12,12 @@ __plugin_meta__ = PluginMetadata(
     description="A plugin to convert English text to Katakana." \
     "Supports both dictionary-based and phonetic conversion methods.",
 
-    usage="/ktkn <English text> - Convert the provided English text(word or sentence) to Katakana.\n" \
-          "/ktknstatus - Check the status of the plugin's dictionary and conversion functionality.",
-
+    usage=( "/ktkn <English text> - "
+            "Convert the provided English text(word or sentence) to Katakana.\n"
+            "/ktknstatus - "
+            "Check the status of the plugin's dictionary and conversion functionality."
+    )
+    ,
     type="application",
 
     homepage="https://github.com/p0rt39/nonebot-plugin-just-enough-katakanas",
@@ -54,18 +57,23 @@ async def handle_ktkn_status() -> None:
     # Only checks if conversion returns a non-empty result,
     # not the correctness of the conversion itself
     # Built-in test and debug is WIP
+    result_message = (
+        f"Dictionary: {'enabled' if dict_enabled else 'disabled'}.\n"+
+        f"Word conversion test: {'passed' if word_test_flag else 'failed'}.\n" +
+        f"Sentence conversion test: {'passed' if sentence_test_flag else 'failed'}."
+        )
 
-    await ktknstatus.finish(f"Dictionary: {'enabled' if dict_enabled else 'disabled'}.\n" +
-                            f"Word conversion test: {'passed' if word_test_flag else 'failed'}.\n" +
-                            f"Sentence conversion test: {'passed' if sentence_test_flag else 'failed'}."
-                                )
+    await ktknstatus.finish(result_message)
 
 @ktknhelp.handle()
 async def handle_ktkn_help() -> None:
     help_message = (
-        "/ktkn <English text> - Convert the provided English text (word or sentence) to Katakana.\n"
-        "/ktknstatus - Check the status of the plugin's dictionary and conversion functionality.\n"
-        "/ktknhelp - Show this help message.\n"
+        "/ktkn <English text> - "
+        "Convert the provided English text (word or sentence) to Katakana.\n"
+        "/ktknstatus - "
+        "Check the status of the plugin's dictionary and conversion functionality.\n"
+        "/ktknhelp - "
+        "Show this help message.\n"
     )
     await ktknhelp.finish(help_message)
 
