@@ -3,9 +3,9 @@ from nonebot.params import CommandArg
 from nonebot.plugin import PluginMetadata
 from nonebot.adapters import Message
 
-from .data_hander.dictionary import ktkndict
+from .data_handler.dictionary import ktkndict
 from .engines.eng2ktkn_engine import eng2ktkn_engine
-from .data_hander.nltk_data_handler import nltk_data
+from .data_handler.nltk_data_handler import nltk_data
 
 require("nonebot_plugin_localstore")
 
