@@ -2,20 +2,18 @@
     <a href="https://v2.nonebot.dev/store">
     <img src="https://raw.githubusercontent.com/fllesser/nonebot-plugin-template/refs/heads/resource/.docs/NoneBotPlugin.svg" width="310" alt="logo"></a>
 
-## ✨ nonebot-plugin-just-enough-katakanas ✨
+## ✨ Just Enough Katakanas ✨
 [![LICENSE](https://img.shields.io/github/license/p0rt39/nonebot-plugin-just-enough-katakanas.svg)](./LICENSE)
 [![pypi](https://img.shields.io/pypi/v/nonebot-plugin-just-enough-katakanas.svg)](https://pypi.python.org/pypi/nonebot-plugin-just-enough-katakanas)
 [![python](https://img.shields.io/badge/python-3.10|3.11|3.12|3.13-blue.svg)](https://www.python.org)
 [![uv](https://img.shields.io/badge/package%20manager-uv-black?style=flat-square&logo=uv)](https://github.com/astral-sh/uv)
-<br/>
 [![ruff](https://img.shields.io/badge/code%20style-ruff-black?style=flat-square&logo=ruff)](https://github.com/astral-sh/ruff)
-[![pre-commit](https://results.pre-commit.ci/badge/github/p0rt39/nonebot-plugin-just-enough-katakanas/master.svg)](https://results.pre-commit.ci/latest/github/p0rt39/nonebot-plugin-just-enough-katakanas/master)
 
 </div>
 
 ## 📖 介绍
 
-使用e2k和g2p-en将英文单词或句子转换为日文片假名。
+通过词典查词或者使用[e2k](https://github.com/Patchethium/e2k/)和[g2p-en](https://github.com/Kyubyong/g2p)音转写,将英文单词或句子转换为日文片假名。
 
 *更多功能 WIP*
 
@@ -103,4 +101,4 @@
 ## License
 
 - 代码部分: Apache-2.0 License.
-- 词典部分: 依照 [Patchethium/e2k](https://github.com/Patchethium/e2k/releases/0.2.0) 提供的katakana_dict.jsonl转换数据库，继承 Wiktionary, JMdict/EDICT 的 CC-BY-SA。
+- 词典部分: [Patchethium/e2k](https://github.com/Patchethium/e2k/releases/0.2.0) 提供的katakana_dict.jsonl, 本插件工作过程中会将其远程下载并按原样提供(provided as is), 继承 Wiktionary, JMdict/EDICT 的 CC-BY-SA。
