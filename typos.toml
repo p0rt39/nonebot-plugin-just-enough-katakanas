@@ -1,0 +1,5 @@
+# typos.toml
+[files]
+extend-exclude = [
+  "src/nonebot_plugin_just_enough_katakanas/assets/",
+]

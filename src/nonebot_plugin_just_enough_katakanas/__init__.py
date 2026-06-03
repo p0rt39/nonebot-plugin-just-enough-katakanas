@@ -8,24 +8,18 @@ from .eng2ktkn_engine import engine
 
 __plugin_meta__ = PluginMetadata(
     name="Just Enough Katakanas",
-
-    description="A plugin to convert English text to Katakana." \
+    description="A plugin to convert English text to Katakana."
     "Supports both dictionary-based and phonetic conversion methods.",
-
-    usage=( "/ktkn <English text> - "
-            "Convert the provided English text(word or sentence) to Katakana.\n"
-            "/ktknstatus - "
-            "Check the status of the plugin's dictionary and conversion functionality."
-    )
-    ,
+    usage=(
+        "/ktkn <English text> - "
+        "Convert the provided English text(word or sentence) to Katakana.\n"
+        "/ktknstatus - "
+        "Check the status of the plugin's dictionary and conversion functionality."
+    ),
     type="application",
-
     homepage="https://github.com/p0rt39/nonebot-plugin-just-enough-katakanas",
-
-    config=None, # WIP so NO configuration options yet.
-
-    supported_adapters=None, # WIP so NO adapter-specific features yet.
-
+    config=None,  # WIP so NO configuration options yet.
+    supported_adapters=None,  # WIP so NO adapter-specific features yet.
     extra={"author": "p0rt39 YuibataMiraa@gmail.com"},
 )
 
@@ -34,14 +28,15 @@ ktknstatus = on_command("ktknstatus", aliases={"eng2ktknstatus"}, priority=4)
 ktknhelp = on_command("ktknhelp", aliases={"eng2ktknhelp"}, priority=4)
 
 dict_enabled = False
-if database.create_connection(): # Check if database connection is established
+if database.create_connection():  # Check if database connection is established
     logger.info("Dictionary database initialized successfully.")
 
     dict_enabled = True
 else:
     logger.warning(
         "Dictionary database not found. Dictionary features will be disabled."
-    )   # Fall back to phonetic conversion only
+    )  # Fall back to phonetic conversion only
+
 
 @ktknstatus.handle()
 async def handle_ktkn_status() -> None:
@@ -58,12 +53,13 @@ async def handle_ktkn_status() -> None:
     # not the correctness of the conversion itself
     # Built-in test and debug is WIP
     result_message = (
-        f"Dictionary: {'enabled' if dict_enabled else 'disabled'}.\n"+
-        f"Word conversion test: {'passed' if word_test_flag else 'failed'}.\n" +
-        f"Sentence conversion test: {'passed' if sentence_test_flag else 'failed'}."
-        )
+        f"Dictionary: {'enabled' if dict_enabled else 'disabled'}.\n"
+        + f"Word conversion test: {'passed' if word_test_flag else 'failed'}.\n"
+        + f"Sentence conversion test: {'passed' if sentence_test_flag else 'failed'}."
+    )
 
     await ktknstatus.finish(result_message)
+
 
 @ktknhelp.handle()
 async def handle_ktkn_help() -> None:
@@ -77,6 +73,7 @@ async def handle_ktkn_help() -> None:
     )
     await ktknhelp.finish(help_message)
 
+
 @ktkn.handle()
 async def handle_ktkn_command(args: Message = CommandArg()) -> None:
     original_text = args.extract_plain_text().strip()
@@ -87,10 +84,7 @@ async def handle_ktkn_command(args: Message = CommandArg()) -> None:
         # The engine will return conversion_source to indicate the source of the results
         # Possible values: "dictionary", "phonetic", "passthrough"
 
-        if (
-            word_count <= 1
-            and conversion_source == "dictionary"
-        ):
+        if word_count <= 1 and conversion_source == "dictionary":
             result = "Dictionary lookup result(s):\n"
             result += "\n".join(converted_list)
             logger.debug("Dictionary lookup success.")
@@ -112,7 +106,7 @@ async def handle_ktkn_command(args: Message = CommandArg()) -> None:
             and len(converted_list) == 1
         ):
             logger.warning("Illegal input. Ignored.")
-            await ktkn.finish() # Illegal input, won't return
+            await ktkn.finish()  # Illegal input, won't return
 
         # if word_count > 1, the matcher will strip and convert words seperately
         # In this case, the conversion_source will be ignored

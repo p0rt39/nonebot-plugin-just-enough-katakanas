@@ -1,6 +1,6 @@
 import re
-from itertools import product
 from pathlib import Path
+from itertools import product
 
 import nltk
 from e2k import P2K
@@ -29,13 +29,13 @@ class English2KatakanaEngine:
         normalized_word = word.strip()
 
         if not normalized_word:
-            return [] # Never reached, reserved for built-in debug (WIP)
+            return []  # Never reached, reserved for built-in debug (WIP)
 
         conn = database.get_connection()
 
         if conn is None:
-            return []   # No database connection, empty result for fallback
-                        # Maybe a FIXME for better fallback mechanism
+            return []  # No database connection, empty result for fallback
+            # Maybe a FIXME for better fallback mechanism
 
         cursor = conn.cursor()
 
