@@ -1,10 +1,14 @@
-from nonebot import logger, on_command
+from nonebot import logger, require, get_driver, on_command
 from nonebot.params import CommandArg
 from nonebot.plugin import PluginMetadata
 from nonebot.adapters import Message
 
-from .dictionary import database
-from .eng2ktkn_engine import engine
+from .data_hander.dictionary import ktkndict
+from .engines.eng2ktkn_engine import eng2ktkn_engine
+from .data_hander.nltk_data_handler import nltk_data
+
+require("nonebot_plugin_localstore")
+
 
 __plugin_meta__ = PluginMetadata(
     name="Just Enough Katakanas",
@@ -28,14 +32,50 @@ ktknstatus = on_command("ktknstatus", aliases={"eng2ktknstatus"}, priority=4)
 ktknhelp = on_command("ktknhelp", aliases={"eng2ktknhelp"}, priority=4)
 
 dict_enabled = False
-if database.create_connection():  # Check if database connection is established
-    logger.info("Dictionary database initialized successfully.")
 
-    dict_enabled = True
-else:
-    logger.warning(
-        "Dictionary database not found. Dictionary features will be disabled."
-    )  # Fall back to phonetic conversion only
+driver = get_driver()
+
+
+@driver.on_startup
+async def _startup_initialization() -> None:
+    try:
+        logger.info("Checking NLTK resources...")
+        nltk_status = await nltk_data.ensure_nltk_resources()
+        logger.info(
+            "NLTK resources status: "
+            f"cmudict={nltk_status[0]}, "
+            f"tagger={nltk_status[1]}, "
+            f"punkt={nltk_status[2]}, "
+            f"punkt_tab={nltk_status[3]}, "
+            f"data_dir={nltk_status[4]}"
+        )
+    except Exception:
+        logger.error("Failed to ensure NLTK resources during startup.")
+
+    global dict_enabled
+
+    if ktkndict.check_dictionary():  # Check if database connection is established
+        logger.info("Dictionary initialized successfully.")
+        dict_enabled = True
+
+        try:
+            eng2ktkn_engine.ktkn_dict = ktkndict.load_dictionary()
+        except Exception:
+            logger.error("Failed to refresh eng2ktkn_engine dictionary after check.")
+        return
+
+    logger.warning("Dictionary database not found. Attempting to download...")
+    await ktkndict.download_dictionary()
+    if not ktkndict.check_dictionary():
+        logger.error("Failed to download dictionary.")
+        logger.warning("Dictionary-based conversion will be disabled.")
+        dict_enabled = False
+        return
+    try:
+        eng2ktkn_engine.ktkn_dict = ktkndict.load_dictionary()
+        logger.info("Dictionary initialized successfully.")
+    except Exception:
+        logger.error("Failed to load dictionary into eng2ktkn_engine after download.")
 
 
 @ktknstatus.handle()
@@ -43,8 +83,8 @@ async def handle_ktkn_status() -> None:
     test_word = "test"
     test_sentence = "The quick brown fox jumps over the lazy dog.".strip()
 
-    converted_word = engine.english_to_katakana(test_word)
-    converted_sentence = engine.english_to_katakana(test_sentence)
+    converted_word = eng2ktkn_engine.english_to_katakana(test_word)
+    converted_sentence = eng2ktkn_engine.english_to_katakana(test_sentence)
 
     word_test_flag = bool(converted_word)
     sentence_test_flag = bool(converted_sentence)
@@ -69,7 +109,7 @@ async def handle_ktkn_help() -> None:
         "/ktknstatus - "
         "Check the status of the plugin's dictionary and conversion functionality.\n"
         "/ktknhelp - "
-        "Show this help message.\n"
+        "Show this help message."
     )
     await ktknhelp.finish(help_message)
 
@@ -79,9 +119,12 @@ async def handle_ktkn_command(args: Message = CommandArg()) -> None:
     original_text = args.extract_plain_text().strip()
 
     if original_text:
-        word_count = len(engine.extract_words(original_text))
-        conversion_source, converted_list = engine.english_to_katakana(original_text)
-        # The engine will return conversion_source to indicate the source of the results
+        word_count = len(eng2ktkn_engine.extract_words(original_text))
+        conversion_source, converted_list = eng2ktkn_engine.english_to_katakana(
+            original_text
+        )
+        # The eng2ktkn_engine will return conversion_source
+        # to indicate the source of the results
         # Possible values: "dictionary", "phonetic", "passthrough"
 
         if word_count <= 1 and conversion_source == "dictionary":
