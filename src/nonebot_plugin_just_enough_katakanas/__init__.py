@@ -108,7 +108,7 @@ async def handle_ktkn_command(args: Message = CommandArg()) -> None:
             logger.warning("Illegal input. Ignored.")
             await ktkn.finish()  # Illegal input, won't return
 
-        # if word_count > 1, the matcher will strip and convert words seperately
+        # if word_count > 1, the matcher will strip and convert words separately
         # In this case, the conversion_source will be ignored
         sentence_output = "\n".join(
             f"{item}" for index, item in enumerate(converted_list, 1)
