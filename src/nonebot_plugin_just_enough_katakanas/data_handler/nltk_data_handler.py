@@ -1,10 +1,11 @@
 import asyncio
 
 import nltk
-import nonebot_plugin_localstore as localstore
 from nonebot import require
 
 require("nonebot_plugin_localstore")
+import nonebot_plugin_localstore as localstore
+
 data_dir = localstore.get_plugin_data_dir()
 
 

@@ -2,10 +2,11 @@ import json
 
 import httpx
 import aiofiles
-import nonebot_plugin_localstore as localstore
 from nonebot import require
 
 require("nonebot_plugin_localstore")
+import nonebot_plugin_localstore as localstore
+
 dict_path = localstore.get_plugin_data_dir() / "katakana_dict.jsonl"
 
 
