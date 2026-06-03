@@ -65,9 +65,11 @@ async def _startup_initialization() -> None:
         return
 
     logger.warning("Dictionary database not found. Attempting to download...")
-    await ktkndict.download_dictionary()
+    try:
+        await ktkndict.download_dictionary()
+    except Exception:
+        logger.error("Failed to download dictionary")
     if not ktkndict.check_dictionary():
-        logger.error("Failed to download dictionary.")
         logger.warning("Dictionary-based conversion will be disabled.")
         dict_enabled = False
         return
