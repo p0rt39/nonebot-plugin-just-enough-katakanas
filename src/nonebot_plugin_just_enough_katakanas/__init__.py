@@ -60,30 +60,29 @@ async def _startup_initialization() -> None:
 
     global dict_enabled
 
-    if ktkndict.check_dictionary():  # Check if database connection is established
-        logger.info("Dictionary initialized successfully.")
-        dict_enabled = True
-
+    if ktkndict.check_dictionary():  # Check if dictionary exists
+        logger.info("Dictionary is present. Loading into engine...")
         try:
             eng2ktkn_engine.ktkn_dict = ktkndict.load_dictionary()
+            logger.info("Dictionary loaded successfully.")
+            dict_enabled = True
         except Exception:
             logger.error("Failed to refresh eng2ktkn_engine dictionary after check.")
         return
 
     logger.warning("Dictionary database not found. Attempting to download...")
-    try:
-        await ktkndict.download_dictionary()
-    except Exception:
-        logger.error("Failed to download dictionary")
-    if not ktkndict.check_dictionary():
-        logger.warning("Dictionary-based conversion will be disabled.")
-        dict_enabled = False
-        return
-    try:
-        eng2ktkn_engine.ktkn_dict = ktkndict.load_dictionary()
-        logger.info("Dictionary initialized successfully.")
-    except Exception:
-        logger.error("Failed to load dictionary into eng2ktkn_engine after download.")
+    if await ktkndict.ensure_dictionary():
+        logger.info("Dictionary downloaded successfully. Loading into engine...")
+        try:
+            eng2ktkn_engine.ktkn_dict = ktkndict.load_dictionary()
+            logger.info("Dictionary loaded successfully.")
+            dict_enabled = True
+        except Exception:
+            logger.error(
+                "Failed to load dictionary into engine after download."
+                "Dictionary-based conversion will be unavailable."
+            )
+            dict_enabled = False
 
 
 @ktknstatus.handle()
