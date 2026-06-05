@@ -31,6 +31,7 @@ ktkn = on_command("ktkn", aliases={"eng2ktkn"}, priority=5)
 ktknstatus = on_command("ktknstatus", aliases={"eng2ktknstatus"}, priority=4)
 ktknhelp = on_command("ktknhelp", aliases={"eng2ktknhelp"}, priority=4)
 
+plugin_enabled = False
 dict_enabled = False
 
 driver = get_driver()
@@ -38,9 +39,19 @@ driver = get_driver()
 
 @driver.on_startup
 async def _startup_initialization() -> None:
+    global plugin_enabled
+
+    logger.info(
+        "Just Enough Katakanas is verifying resources."
+        "During this session, the functions will be temporarily unavailable."
+    )
     try:
-        logger.info("Checking NLTK resources...")
+        logger.info(
+            "Checking NLTK resources..."
+            "If got stuck here, please check network connection to Github."
+        )
         nltk_status = await nltk_data.ensure_nltk_resources()
+        # This would wait for nltk data to be verified
         logger.info(
             "NLTK resources status: "
             f"cmudict={nltk_status[0]}, "
@@ -49,14 +60,21 @@ async def _startup_initialization() -> None:
             f"punkt_tab={nltk_status[3]}, "
             f"data_dir={nltk_status[4]}"
         )
+        if not all(nltk_status[::3]):
+            logger.error("One or more NLTK resources failed to download.")
+            plugin_enabled = False
     except Exception:
         logger.error("Failed to ensure NLTK resources during startup.")
+        plugin_enabled = False
+        # This plugin won't work properly without ensuring NLTK resource
 
     try:
         eng2ktkn_engine.get_g2p()
         logger.info("Verified NLTK resources within engine.")
+        plugin_enabled = True
     except Exception:
         logger.error("Failed to verify NLTK resources within engine.")
+        plugin_enabled = False
 
     global dict_enabled
 
@@ -84,9 +102,16 @@ async def _startup_initialization() -> None:
             )
             dict_enabled = False
 
+    if not plugin_enabled:
+        logger.critical("Just Enough Katakanas DISABLED due to NLTK_data Failure.")
+    if plugin_enabled:
+        logger.info("Just Enough Katakanas is good to go!")
+
 
 @ktknstatus.handle()
 async def handle_ktkn_status() -> None:
+    if not plugin_enabled:
+        await ktknstatus.finish()
     test_word = "test"
     test_sentence = "The quick brown fox jumps over the lazy dog.".strip()
 
@@ -110,6 +135,8 @@ async def handle_ktkn_status() -> None:
 
 @ktknhelp.handle()
 async def handle_ktkn_help() -> None:
+    if not plugin_enabled:
+        await ktknhelp.finish()
     help_message = (
         "/ktkn <English text> - "
         "Convert the provided English text (word or sentence) to Katakana.\n"
@@ -123,6 +150,8 @@ async def handle_ktkn_help() -> None:
 
 @ktkn.handle()
 async def handle_ktkn_command(args: Message = CommandArg()) -> None:
+    if not plugin_enabled:
+        await ktkn.finish()
     original_text = args.extract_plain_text().strip()
 
     if original_text:
