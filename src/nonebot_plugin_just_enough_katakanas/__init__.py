@@ -52,6 +52,12 @@ async def _startup_initialization() -> None:
     except Exception:
         logger.error("Failed to ensure NLTK resources during startup.")
 
+    try:
+        eng2ktkn_engine.get_g2p()
+        logger.info("Verified NLTK resources within engine.")
+    except Exception:
+        logger.error("Failed to verify NLTK resources within engine.")
+
     global dict_enabled
 
     if ktkndict.check_dictionary():  # Check if database connection is established
@@ -132,7 +138,7 @@ async def handle_ktkn_command(args: Message = CommandArg()) -> None:
         if word_count <= 1 and conversion_source == "dictionary":
             result = "Dictionary lookup result(s):\n"
             result += "\n".join(converted_list)
-            logger.debug("Dictionary lookup success.")
+            logger.debug(f"Dictionary lookup result(s): {converted_list}")
             await ktkn.finish(result)
 
         if (
@@ -142,7 +148,7 @@ async def handle_ktkn_command(args: Message = CommandArg()) -> None:
         ):
             result = "Phonetic converted result:\n"
             result += converted_list[0]
-            logger.debug("Phonetic converted success.")
+            logger.debug(f"Phonetic converted result: {converted_list[0]}")
             await ktkn.finish(result)
 
         if (
@@ -159,7 +165,7 @@ async def handle_ktkn_command(args: Message = CommandArg()) -> None:
             f"{item}" for index, item in enumerate(converted_list, 1)
         )
 
-        logger.debug("Sentence conversion result: %s", sentence_output)
+        logger.debug(f"Sentence conversion result: {sentence_output}")
         await ktkn.finish(sentence_output)
     else:
         logger.debug("No input provided for conversion.")

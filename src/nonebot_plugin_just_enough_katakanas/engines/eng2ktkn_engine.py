@@ -2,7 +2,6 @@ import re
 from itertools import product
 
 from e2k import P2K
-from g2p_en import G2p
 
 WORD_RE = re.compile(r"[A-Za-z']+")
 VALID_WORD_RE = re.compile(r"^[A-Za-z']+$")
@@ -11,9 +10,16 @@ TOKEN_RE = re.compile(r"[A-Za-z']+|[^A-Za-z']+")
 
 class English2KatakanaEngine:
     def __init__(self) -> None:
-        self.g2p = G2p()
+        self.g2p = None
         self.p2k = P2K()
         self.ktkn_dict: dict[str, list[str]] = {}
+
+    def get_g2p(self):
+        if self.g2p is None:
+            from g2p_en import G2p
+
+            self.g2p = G2p()
+        return self.g2p
 
     def extract_words(self, text: str) -> list[str]:
         return WORD_RE.findall(text)
@@ -46,7 +52,8 @@ class English2KatakanaEngine:
     # Universal phonetic convert engine
     def phonetic_convert(self, word: str) -> str:
         try:
-            return self.p2k(self.g2p(word))
+            g2p = self.get_g2p()
+            return self.p2k(g2p(word))
         except LookupError:
             return self._phonetic_convert_without_tagger(word)
             # Fallback if NLTK data missing, never reached
@@ -57,7 +64,8 @@ class English2KatakanaEngine:
 
         for token in re.findall(r"[A-Za-z']+|[^A-Za-z']+", text):
             if re.search(r"[A-Za-z]", token):
-                parts.append(self.p2k(self.g2p.predict(token.lower())))
+                g2p = self.get_g2p()
+                parts.append(self.p2k(g2p.predict(token.lower())))
             else:
                 parts.append(token)
 
