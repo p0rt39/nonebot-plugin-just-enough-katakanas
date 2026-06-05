@@ -12,7 +12,7 @@ require("nonebot_plugin_localstore")
 
 __plugin_meta__ = PluginMetadata(
     name="Just Enough Katakanas",
-    description="A plugin to convert English text to Katakana."
+    description="A plugin to convert English text to Katakana.\n"
     "Supports both dictionary-based and phonetic conversion methods.",
     usage=(
         "/ktkn <English text> - "
