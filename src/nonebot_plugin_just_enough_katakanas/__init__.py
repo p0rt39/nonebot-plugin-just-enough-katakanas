@@ -41,13 +41,16 @@ driver = get_driver()
 async def _startup_initialization() -> None:
     global plugin_enabled
 
+    nltk_download_ok = False
+    g2p_ok = False
+
     logger.info(
-        "Just Enough Katakanas is verifying resources."
+        "Just Enough Katakanas is verifying resources. "
         "During this session, the functions will be temporarily unavailable."
     )
     try:
         logger.info(
-            "Checking NLTK resources..."
+            "Checking NLTK resources... "
             "If got stuck here, please check network connection to Github."
         )
         nltk_status = await nltk_data.ensure_nltk_resources()
@@ -60,21 +63,22 @@ async def _startup_initialization() -> None:
             f"punkt_tab={nltk_status[3]}, "
             f"data_dir={nltk_status[4]}"
         )
-        if not all(nltk_status[::3]):
+        if not all(nltk_status[:4]):
             logger.error("One or more NLTK resources failed to download.")
-            plugin_enabled = False
+        else:
+            nltk_download_ok = True
     except Exception:
         logger.error("Failed to ensure NLTK resources during startup.")
-        plugin_enabled = False
         # This plugin won't work properly without ensuring NLTK resource
 
     try:
         eng2ktkn_engine.get_g2p()
         logger.info("Verified NLTK resources within engine.")
-        plugin_enabled = True
+        g2p_ok = True
     except Exception:
         logger.error("Failed to verify NLTK resources within engine.")
-        plugin_enabled = False
+
+    plugin_enabled = nltk_download_ok and g2p_ok
 
     global dict_enabled
 

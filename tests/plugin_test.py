@@ -28,6 +28,7 @@ async def test_ktkn_empty(app: App):
         ctx.should_finished()
 
 
+@pytest.mark.asyncio
 async def test_ktkn_dict(app: App):
     import nonebot
     from nonebot.adapters.onebot.v11 import Bot
@@ -49,6 +50,7 @@ async def test_ktkn_dict(app: App):
         ctx.should_finished()
 
 
+@pytest.mark.asyncio
 async def test_ktkn_sentence(app: App):
     import nonebot
     from nonebot.adapters.onebot.v11 import Bot
@@ -76,6 +78,7 @@ async def test_ktkn_sentence(app: App):
         ctx.should_finished()
 
 
+@pytest.mark.asyncio
 async def test_ktkn_phonetic(app: App):
     import nonebot
     from nonebot.adapters.onebot.v11 import Bot
